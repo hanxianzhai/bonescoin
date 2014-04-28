@@ -41,7 +41,7 @@ CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
 
 unsigned int nTargetSpacing = 1 * 60; // 1 minute
-unsigned int nStakeMinAge = 8 * 60 * 60; // 8 hours
+unsigned int nStakeMinAge = 24 * 60 * 60; // 24 hours
 unsigned int nStakeMaxAge = -1; // unlimited
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
 
@@ -68,7 +68,7 @@ map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
 // Constant stuff for coinbase transactions we create:
 CScript COINBASE_FLAGS;
 
-const string strMessageMagic = "BlackCoin Signed Message:\n";
+const string strMessageMagic = "BonesCoin Signed Message:\n";
 
 // Settings
 int64_t nTransactionFee = MIN_TX_FEE;
@@ -964,12 +964,15 @@ uint256 WantedByOrphan(const CBlock* pblockOrphan)
 }
 
 // miner's coin base reward
-int64_t GetProofOfWorkReward(int64_t nFees)
+int64_t GetProofOfWorkReward(int nHeight, int64_t nFees)
 {
-    int64_t nSubsidy = 10000 * COIN;
+    int64_t nSubsidy = 0 * COIN;
 
-    if (fDebug && GetBoolArg("-printcreation"))
-        printf("GetProofOfWorkReward() : create=%s nSubsidy=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nSubsidy);
+    if(nHeight == 1)
+        {
+                nSubsidy = 21000000 * COIN;     // 21 billion coins, that all pow coins
+                return nSubsidy + nFees;
+        }
 
     return nSubsidy + nFees;
 }
@@ -2419,7 +2422,7 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes)
         string strMessage = _("Warning: Disk space is low!");
         strMiscWarning = strMessage;
         printf("*** %s\n", strMessage.c_str());
-        uiInterface.ThreadSafeMessageBox(strMessage, "BlackCoin", CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
+        uiInterface.ThreadSafeMessageBox(strMessage, "BonesCoin", CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
         StartShutdown();
         return false;
     }
@@ -2532,9 +2535,9 @@ bool LoadBlockIndex(bool fAllowNew)
         //    CTxOut(empty)
         //  vMerkleTree: 12630d16a9
 
-        const char* pszTimestamp = "20 Feb 2014 Bitcoin ATMs come to USA";
+        const char* pszTimestamp = "Inscriptions on bones or tortoise shells of the Shang Dynasty is unique to an ancient Chinese text.";
         CTransaction txNew;
-        txNew.nTime = 1393221600;
+        txNew.nTime = 1398705863;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 0 << CBigNum(42) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
@@ -2544,7 +2547,7 @@ bool LoadBlockIndex(bool fAllowNew)
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1393221600;
+        block.nTime    = 1398705863;
         block.nBits    = bnProofOfWorkLimit.GetCompact();
         block.nNonce   = !fTestNet ? 164482 : 216178;
 
